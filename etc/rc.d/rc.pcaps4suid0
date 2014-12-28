@@ -1,9 +1,12 @@
 #!/bin/sh
 #
 # Start/stop/restart/reload/status: pcaps4suid0.
+#
+
+CONFIGFILE=/etc/default/pcaps4suid0
 
 pcaps4suid0_start() {
-	if [ -r /etc/default/pcaps4suid0 -a -x /usr/sbin/pcaps4suid0 ]; then
+	if [ -r $CONFIGFILE -a -x /usr/sbin/pcaps4suid0 ]; then
 		/usr/sbin/pcaps4suid0 convert
 	fi
 }
@@ -25,16 +28,15 @@ case "$1" in
 	'stop')
 		pcaps4suid0_stop
 	;;
-	'restart|reload')
+	'restart'|'reload')
 		pcaps4suid0_restart
 	;;
 	'status')
-		if  [ ! -r /etc/default/pcaps4suid0 ]; then
-			echo "Unable to read: /etc/default/pcaps4suid0" >&2 
+		if  [ ! -r $CONFIGFILE ]; then
+			echo "Unable to read: $CONFIGFILE" >&2 
 			exit 1
 		fi
-		for f in $(grep -v -e '^$' -e '^#' /etc/default/pcaps4suid0 \
-			| cut -d= -f1 | tr '\n' ' '); do
+		for f in $(grep -v -e '^$' -e '^#' $CONFIGFILE | cut -d= -f1 | tr '\n' ' '); do
 			/sbin/getcap `which $f` 
 			ls -l `which $f`
 			printf "\n"
