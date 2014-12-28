@@ -1,0 +1,48 @@
+#!/bin/sh
+#
+# Start/stop/restart/reload/status: pcaps4suid0.
+
+pcaps4suid0_start() {
+	if [ -r /etc/default/pcaps4suid0 -a -x /usr/sbin/pcaps4suid0 ]; then
+		/usr/sbin/pcaps4suid0 convert
+	fi
+}
+
+pcaps4suid0_stop() {
+	/usr/sbin/pcaps4suid0 revert
+}
+
+pcaps4suid0_restart() {
+	pcaps4suid0_stop
+	sleep 1
+	pcaps4suid0_start
+}
+
+case "$1" in
+	'start')
+		pcaps4suid0_start
+	;;
+	'stop')
+		pcaps4suid0_stop
+	;;
+	'restart|reload')
+		pcaps4suid0_restart
+	;;
+	'status')
+		if  [ ! -r /etc/default/pcaps4suid0 ]; then
+			echo "Unable to read: /etc/default/pcaps4suid0" >&2 
+			exit 1
+		fi
+		for f in $(grep -v -e '^$' -e '^#' /etc/default/pcaps4suid0 \
+			| cut -d= -f1 | tr '\n' ' '); do
+			/sbin/getcap `which $f` 
+			ls -l `which $f`
+			printf "\n"
+		done
+	;;
+	*)
+		echo $"Usage: $0 {start|stop|restart|reload|status}"
+		exit 3
+	;;
+esac
+
