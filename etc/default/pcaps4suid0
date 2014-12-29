@@ -31,7 +31,6 @@ crontab=cap_dac_override,cap_setgid
 #
 
 # Slackware -> no PAM
-#passwd=0,1,3 #PAM
 #unix_chkpwd=cap_dac_read_search
 
 #
@@ -40,6 +39,7 @@ crontab=cap_dac_override,cap_setgid
 
 # Warning: CAP_SYS_ADMIN is essentially root access.
 # There's little to no security offered by doing this.
+# However it may allow some audit trails to remain readable.
 
 Xorg=cap_dac_override,cap_chown,cap_sys_rawio,cap_sys_admin
 
@@ -56,6 +56,8 @@ traceroute6=cap_net_raw
 #rsh=cap_net_bind_service
 #rcp=cap_net_bind_service
 #rlogin=cap_net_bind_service
+
+# Use SSH and/or Kerberos cq SSL/TLS instead!? 
 
 #
 # shadow
@@ -76,7 +78,7 @@ passwd=cap_chown,cap_dac_override,cap_fowner
 #chage=cap_dac_read_search
 #expiry=cap_dac_override,cap_setgid
 
-# Note on redhat: chgrp shadow /etc/passwd; chmod g+r /etc/passwd
+# Note on redhat: chgrp shadow /etc/shadow; chmod g+r /etc/shadow
 
 #
 # util-linux-ng
@@ -92,7 +94,9 @@ passwd=cap_chown,cap_dac_override,cap_fowner
 #umount=cap_dac_override,cap_sys_admin
 
 #
-# Other programs that benefit from capabilities
+# Other programs that may benefit from capabilities,
+# In case the alternative would be (is?) to ``setuid root'' them IMO
+# And i'd advice to: addgroup -r beep; chgroup beep `which beep` etc ...
 #
 
 #beep=cap_dac_override,cap_sys_tty_config
