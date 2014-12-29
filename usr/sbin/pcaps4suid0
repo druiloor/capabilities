@@ -4,6 +4,7 @@
 # author:    chris friedhoff - chris@friedhoff.org
 # version:   pcaps4suid0  3  Tue Mar 11 2008
 #
+# Configfile support added by Menno Duursma <druiloor@zonnet.nl>
 #
 # changelog:
 # 1 - initial release suid02pcaps
@@ -37,7 +38,7 @@ else
   . $CONFIGFILE
 fi
 
-APPS=$(while read line; do \
+APPS=$( while read line; do \
     echo $line | grep -v -e ^# -e ^$ | cut -d= -f1 | tr '\n' " " ; done \
         < $CONFIGFILE )
 
@@ -56,7 +57,7 @@ SET=pe
 ######################
 
 #save assumption!?
-export PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin
+export PATH=/sbin:/bin:/usr/sbin:/usr/bin
 
 p4s_test(){
     # are we sane?
