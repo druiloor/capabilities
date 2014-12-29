@@ -1,20 +1,102 @@
-# see /usr/include/linux/capability.h
+# See /usr/include/linux/capability.h
 
-Xorg=cap_dac_override,cap_chown,cap_sys_rawio,cap_sys_admin
+# FWIW: This is totally un-tested!!! ;-)
+
+# Note: personally i create a group for all privileged binarys and
+#  allow only it's members execute access (maybe exept with procmail).
+# http://www.archivum.info/comp.os.linux.security/2006-04/00353/Re-Network-Security--Monolithic-or-Modular.html
+
+# e.g. to make exploits, such as in the following description, harder:
+#
+#  Linux Local Privilege Escalation via SUID /proc/pid/mem Write
+#  http://blog.zx2c4.com/749
+
+# This seems to be a good link too
+# https://wiki.archlinux.org/index.php/Talk:DeveloperWiki:Security
+
+#
+# coreutils
+#
+
 su=cap_dac_read_search,cap_setgid,cap_setuid
 
-#ping=cap_net_raw
-#ping=13
-#traceroute=cap_net_raw
-#traceroute=13
-#chsh=0,2,4,7
-#chfn=0,2,4,7
-#Xorg=1,6,7,17,21,26
-#chage=2
-#passwd=0,2,4,7
-#passwd 0,1
+#
+# dcron
+#
+
+crontab=cap_dac_override,cap_setgid
+
+#
+# pam
+#
+
+# Slackware -> no PAM
 #passwd=0,1,3 #PAM
-#unix_chkpwd=1
-#mount=1,21
-#umount=1,21
-#su=2,6,7
+#unix_chkpwd=cap_dac_read_search
+
+#
+# X11
+#
+
+# Warning: CAP_SYS_ADMIN is essentially root access.
+# There's little to no security offered by doing this.
+
+Xorg=cap_dac_override,cap_chown,cap_sys_rawio,cap_sys_admin
+
+#
+# inetutils
+#
+
+ping=cap_net_raw
+ping6=cap_net_raw
+
+traceroute=cap_net_raw
+traceroute6=cap_net_raw
+
+#rsh=cap_net_bind_service
+#rcp=cap_net_bind_service
+#rlogin=cap_net_bind_service
+
+#
+# shadow
+#
+
+chfn=cap_chown,cap_setuid
+chsh=cap_chown,cap_setuid
+gpasswd=cap_chown,cap_dac_override,cap_setuid
+newgrp=cap_dac_override,cap_setgid
+passwd=cap_chown,cap_dac_override,cap_fowner
+
+# If at all possible i'd rather use sgid than caps
+# even though i do prefer caps over suid (least privilege) e.g.
+#
+# $ ls -l /usr/bin/{chage,expiry} | cut -d' ' -f1-4,10
+# -rwx--s--x 1 root shadow /usr/bin/chage*
+# -rwx--s--x 1 root shadow /usr/bin/expiry*
+#chage=cap_dac_read_search
+#expiry=cap_dac_override,cap_setgid
+
+# Note on redhat: chgrp shadow /etc/passwd; chmod g+r /etc/passwd
+
+#
+# util-linux-ng
+#
+
+# Warning: Do not use it, because mount and umount can not do some checks,
+# then users can mount/umount filesystems that do not have permission.
+
+# See: 1. "Exploit file with capabilities"
+# http://www.sevagas.com/IMG/pdf/exploiting_capabilities_the_dark_side.pdf
+
+#mount=cap_dac_override,cap_sys_admin
+#umount=cap_dac_override,cap_sys_admin
+
+#
+# Other programs that benefit from capabilities
+#
+
+#beep=cap_dac_override,cap_sys_tty_config
+#chvt=cap_dac_read_search,cap_sys_tty_config
+#iftop=cap_net_raw
+#mii-tool=cap_net_admin
+
