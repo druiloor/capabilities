@@ -3,19 +3,22 @@
 # Start/stop/restart/reload/status: pcaps4suid0.
 #
 
-CONFIGFILE=/etc/default/pcaps4suid0
+CONFIGFILE='/etc/default/pcaps4suid0'
 
-pcaps4suid0_start() {
-	if [ -r $CONFIGFILE -a -x /usr/sbin/pcaps4suid0 ]; then
+function pcaps4suid0_start()
+{
+	if [ -r "${CONFIGFILE}" -a -x /usr/sbin/pcaps4suid0 ]; then
 		/usr/sbin/pcaps4suid0 convert
 	fi
 }
 
-pcaps4suid0_stop() {
+function pcaps4suid0_stop()
+{
 	/usr/sbin/pcaps4suid0 revert
 }
 
-pcaps4suid0_restart() {
+function pcaps4suid0_restart()
+{
 	pcaps4suid0_stop
 	sleep 1
 	pcaps4suid0_start
@@ -25,23 +28,28 @@ case "$1" in
 	'start')
 		pcaps4suid0_start
 	;;
+
 	'stop')
 		pcaps4suid0_stop
 	;;
+
 	'restart'|'reload')
 		pcaps4suid0_restart
 	;;
+
 	'status')
-		if  [ ! -r $CONFIGFILE ]; then
+		if  [ ! -r "${CONFIGFILE}" ]; then
 			echo "Unable to read: $CONFIGFILE" >&2 
 			exit 1
 		fi
-		for f in $(grep -v -e '^$' -e '^#' $CONFIGFILE | cut -d= -f1 | tr '\n' ' '); do
+
+		for f in $(grep -v -e '^$' -e '^#' "${CONFIGFILE}" | cut -d= -f1 | tr '\n' ' '); do
 			/sbin/getcap `which $f` 
 			ls -l `which $f`
 			printf "\n"
 		done
 	;;
+
 	*)
 		echo $"Usage: $0 {start|stop|restart|reload|status}"
 		exit 3
