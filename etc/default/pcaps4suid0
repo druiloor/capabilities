@@ -47,17 +47,18 @@ Xorg=cap_dac_override,cap_chown,cap_sys_rawio,cap_sys_admin
 # inetutils
 #
 
+# Warning: These capabilities allow gaining root access by reading the root password
+# and/or modifying files/permissions.
+
 ping=cap_net_raw
 ping6=cap_net_raw
 
 traceroute=cap_net_raw
 traceroute6=cap_net_raw
 
-#rsh=cap_net_bind_service
-#rcp=cap_net_bind_service
-#rlogin=cap_net_bind_service
-
-# Use SSH and/or Kerberos cq SSL/TLS instead!? 
+rsh=cap_net_bind_service
+rcp=cap_net_bind_service
+rlogin=cap_net_bind_service
 
 #
 # shadow
@@ -96,11 +97,21 @@ passwd=cap_chown,cap_dac_override,cap_fowner
 #
 # Other programs that may benefit from capabilities,
 # In case the alternative would be (is?) to ``setuid root'' them IMO
-# And i'd advice to: addgroup -r beep; chgroup beep `which beep` etc ...
+#
+
+# https://wiki.archlinux.org/index.php/Using_File_Capabilities_Instead_Of_Setuid
+
+#
+# Be sure to do the following first:
+#
+# chgrp wheel `which utility`
+# chmod 710 `which utility`
 #
 
 #beep=cap_dac_override,cap_sys_tty_config
 #chvt=cap_dac_read_search,cap_sys_tty_config
 #iftop=cap_net_raw
 #mii-tool=cap_net_admin
+
+#tcpdump=cap_net_raw
 
