@@ -47,9 +47,6 @@ Xorg=cap_dac_override,cap_chown,cap_sys_rawio,cap_sys_admin
 # inetutils
 #
 
-# Warning: These capabilities allow gaining root access by reading the root password
-# and/or modifying files/permissions.
-
 ping=cap_net_raw
 ping6=cap_net_raw
 
@@ -64,15 +61,15 @@ rlogin=cap_net_bind_service
 # shadow
 #
 
+# Warning: These capabilities allow gaining root access by reading the root password
+# and/or modifying files/permissions.
+
 chfn=cap_chown,cap_setuid
 chsh=cap_chown,cap_setuid
 gpasswd=cap_chown,cap_dac_override,cap_setuid
 newgrp=cap_dac_override,cap_setgid
 passwd=cap_chown,cap_dac_override,cap_fowner
 
-# If at all possible i'd rather use sgid than caps
-# even though i do prefer caps over suid (least privilege) e.g.
-#
 # $ ls -l /usr/bin/{chage,expiry} | cut -d' ' -f1-4,10
 # -rwx--s--x 1 root shadow /usr/bin/chage*
 # -rwx--s--x 1 root shadow /usr/bin/expiry*
@@ -96,7 +93,7 @@ passwd=cap_chown,cap_dac_override,cap_fowner
 
 #
 # Other programs that may benefit from capabilities,
-# In case the alternative would be (is?) to ``setuid root'' them IMO
+# In case the alternative would be to ``setuid root'' i suppose.
 #
 
 # https://wiki.archlinux.org/index.php/Using_File_Capabilities_Instead_Of_Setuid
