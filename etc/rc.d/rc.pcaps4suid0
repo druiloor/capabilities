@@ -1,27 +1,64 @@
-#!/bin/sh
+#!/bin/bash
 #
 # Start/stop/restart/reload/status: pcaps4suid0.
 #
 
-CONFIGFILE='/etc/default/pcaps4suid0'
+CONFIGFILE=/etc/default/pcaps4suid0
 
 function pcaps4suid0_start()
 {
 	if [ -r "${CONFIGFILE}" -a -x /usr/sbin/pcaps4suid0 ]; then
-		/usr/sbin/pcaps4suid0 convert
+		if ! /usr/sbin/pcaps4suid0 convert
+		then
+			echo "Error: /usr/sbin/pcaps4suid0 convert" >&2
+		fi
 	fi
 }
 
 function pcaps4suid0_stop()
 {
-	/usr/sbin/pcaps4suid0 revert
+	if ! /usr/sbin/pcaps4suid0 revert
+	then
+		echo "Error: /usr/sbin/pcaps4suid0 revert" >&2
+	fi
 }
 
 function pcaps4suid0_restart()
 {
 	pcaps4suid0_stop
-	sleep 1
+		sleep 1
 	pcaps4suid0_start
+}
+
+function pcaps4suid0_status()
+{
+	if  [ ! -r "${CONFIGFILE}" ]
+	then
+		echo "Error: unable to read: $CONFIGFILE" >&2
+		return=1
+	fi
+
+	# This maybe a bash feature
+	if ! command -v grep
+	then
+		echo "Error: command -v grep" >&2
+	fi
+
+	for f in $(grep -v -e '^$' -e '^#' "${CONFIGFILE}" | cut -d= -f1 | tr '\n' ' ')
+	do
+		# Well if we dont have which this probably errs out badley
+		if ! /sbin/getcap `which $f`
+		then
+			echo "Error: /sbin/getcap `which $f`"
+		fi
+
+		if ! ls -l `which $f`
+		then
+			echo "Error: ls -l `which $f`"
+		fi
+
+			printf "\n"
+	done
 }
 
 case "$1" in
@@ -38,16 +75,8 @@ case "$1" in
 	;;
 
 	'status')
-		if  [ ! -r "${CONFIGFILE}" ]; then
-			echo "Unable to read: $CONFIGFILE" >&2 
-			exit 1
-		fi
-
-		for f in $(grep -v -e '^$' -e '^#' "${CONFIGFILE}" | cut -d= -f1 | tr '\n' ' '); do
-			/sbin/getcap `which $f` 
-			ls -l `which $f`
-			printf "\n"
-		done
+		pcaps4suid0_status
+		exit $return
 	;;
 
 	*)
