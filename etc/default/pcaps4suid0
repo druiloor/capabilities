@@ -1,26 +1,24 @@
+#
 # See /usr/include/linux/capability.h
-
-# FWIW: This is totally un-tested!!! ;-)
+#
 
 # Note: personally i create a group for all privileged binarys and
-#  allow only it's members execute access (maybe exept with procmail).
+# allow only it's members execute access (maybe exept with procmail).
 # http://www.archivum.info/comp.os.linux.security/2006-04/00353/Re-Network-Security--Monolithic-or-Modular.html
-
+#
 # e.g. to make exploits, such as in the following description, harder:
 #
-#  Linux Local Privilege Escalation via SUID /proc/pid/mem Write
-#  http://blog.zx2c4.com/749
+# Linux Local Privilege Escalation via SUID /proc/pid/mem Write
+# http://blog.zx2c4.com/749
 #
 # OpenSSH <=6.6 SFTP misconfiguration exploit for 64bit Linux
 # http://seclists.org/fulldisclosure/2014/Oct/35
-
-# This seems to be a good link too
-# https://wiki.archlinux.org/index.php/Talk:DeveloperWiki:Security
 
 #
 # coreutils
 #
 
+# Why this works for me
 su=cap_dac_read_search,cap_setgid,cap_setuid
 
 #
@@ -70,6 +68,7 @@ rlogin=cap_net_bind_service
 
 # Warning: These capabilities allow gaining root access by reading the root password
 # and/or modifying files/permissions.
+# Note on redhat: chgrp shadow /etc/shadow; chmod g+r /etc/shadow
 
 chfn=cap_chown,cap_setuid
 chsh=cap_chown,cap_setuid
@@ -81,9 +80,8 @@ passwd=cap_chown,cap_dac_override,cap_fowner
 # -rwx--s--x 1 root shadow /usr/bin/chage*
 # -rwx--s--x 1 root shadow /usr/bin/expiry*
 #chage=cap_dac_read_search
+# ???
 #expiry=cap_dac_override,cap_setgid
-
-# Note on redhat: chgrp shadow /etc/shadow; chmod g+r /etc/shadow
 
 #
 # util-linux-ng
@@ -91,8 +89,8 @@ passwd=cap_chown,cap_dac_override,cap_fowner
 
 # Warning: Do not use it, because mount and umount can not do some checks,
 # then users can mount/umount filesystems that do not have permission.
-
-# See: 1. "Exploit file with capabilities"
+#
+# See: "Exploit file with capabilities"
 # http://www.sevagas.com/IMG/pdf/exploiting_capabilities_the_dark_side.pdf
 
 #mount=cap_dac_override,cap_sys_admin
@@ -103,9 +101,9 @@ passwd=cap_chown,cap_dac_override,cap_fowner
 #
 
 # XXX In case the alternative would be to ``setuid root'' (i suppose?).
-
+#
 # https://wiki.archlinux.org/index.php/Using_File_Capabilities_Instead_Of_Setuid
-
+#
 # Be sure to do the following first:
 # chgrp wheel `which utility`
 # chmod 710 `which utility`
@@ -114,6 +112,5 @@ passwd=cap_chown,cap_dac_override,cap_fowner
 #chvt=cap_dac_read_search,cap_sys_tty_config
 #iftop=cap_net_raw
 #mii-tool=cap_net_admin
-
 #tcpdump=cap_net_raw
 
