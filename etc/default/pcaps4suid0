@@ -10,6 +10,9 @@
 #
 #  Linux Local Privilege Escalation via SUID /proc/pid/mem Write
 #  http://blog.zx2c4.com/749
+#
+# OpenSSH <=6.6 SFTP misconfiguration exploit for 64bit Linux
+# http://seclists.org/fulldisclosure/2014/Oct/35
 
 # This seems to be a good link too
 # https://wiki.archlinux.org/index.php/Talk:DeveloperWiki:Security
@@ -39,6 +42,10 @@ crontab=cap_dac_override,cap_setgid
 
 # Warning: CAP_SYS_ADMIN is essentially root access.
 # There's little to no security offered by doing this.
+# See:
+# False Boundaries and Arbitrary Code Execution
+# https://forums.grsecurity.net/viewtopic.php?f=7&t=2522
+
 # However it may allow some audit trails to remain readable.
 
 Xorg=cap_dac_override,cap_chown,cap_sys_rawio,cap_sys_admin
@@ -93,17 +100,15 @@ passwd=cap_chown,cap_dac_override,cap_fowner
 
 #
 # Other programs that may benefit from capabilities,
-# In case the alternative would be to ``setuid root'' i suppose.
 #
+
+# XXX In case the alternative would be to ``setuid root'' (i suppose?).
 
 # https://wiki.archlinux.org/index.php/Using_File_Capabilities_Instead_Of_Setuid
 
-#
 # Be sure to do the following first:
-#
 # chgrp wheel `which utility`
 # chmod 710 `which utility`
-#
 
 #beep=cap_dac_override,cap_sys_tty_config
 #chvt=cap_dac_read_search,cap_sys_tty_config
