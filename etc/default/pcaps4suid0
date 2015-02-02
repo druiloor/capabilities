@@ -18,7 +18,7 @@
 # coreutils
 #
 
-# Why this works for me
+# Why, this (still) works for me...
 su=cap_dac_read_search,cap_setgid,cap_setuid
 
 #
