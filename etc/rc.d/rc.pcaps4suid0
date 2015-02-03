@@ -1,7 +1,10 @@
 #!/bin/sh
+
 #
 # Start/stop/restart/reload/status: pcaps4suid0.
 #
+
+#set -vx
 
 CONFIGFILE=/etc/default/pcaps4suid0
 
@@ -35,20 +38,20 @@ function pcaps4suid0_status()
 		exit 1
 	fi
 
-	# See if we have /sbin in are path
-	if ! command -v getcap; then
-		echo "Error: command -v getcap" >&2
+	if ! command -v grep; then
+		echo "Error: command grep" >&2
 		exit 1
 	fi
 
 	for f in $(grep -v -e '^$' -e '^#' "${CONFIGFILE}" | cut -d= -f1 | tr '\n' ' '); do
-		# Well if we dont have which this probably errs out badley
-		if ! getcap `which $f`; then
-			echo "Error: getcap `which $f`"
+
+		if ! ls -l `command -v $f`; then
+			echo "Error: ls -l `command -v $f`" >&2
 		fi
 
-		if ! ls -l `which $f`; then
-			echo "Error: ls -l `which $f`"
+		# Use the full path so all users can use it
+		if ! /sbin/getcap `command -v $f`; then
+			echo "Error: /sbin/getcap `command -v $f`" >&2
 		fi
 
 		printf "\n"
