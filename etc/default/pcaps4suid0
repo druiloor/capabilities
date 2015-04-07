@@ -1,24 +1,21 @@
 #
-# See /usr/include/linux/capability.h
+# See pcaps4suid0(8) and /usr/include/linux/capability.h
 #
 
-# Note: personally i create a group for all privileged binarys and
-# allow only it's members execute access (maybe exept with procmail).
-# http://www.archivum.info/comp.os.linux.security/2006-04/00353/Re-Network-Security--Monolithic-or-Modular.html
-#
-# e.g. to make exploits, such as in the following description, harder:
-#
-# Linux Local Privilege Escalation via SUID /proc/pid/mem Write
-# http://blog.zx2c4.com/749
-#
-# OpenSSH <=6.6 SFTP misconfiguration exploit for 64bit Linux
-# http://seclists.org/fulldisclosure/2014/Oct/35
+# CAP_SYS_ADMIN etc are essentially root access!
+# There is little to no security offered by doing this.
+
+# See:
+# False Boundaries and Arbitrary Code Execution by Brad Spengler
+# https://forums.grsecurity.net/viewtopic.php?f=7&t=2522
+
+# Following is partly copy&pasted from here:
+# https://wiki.archlinux.org/index.php/Using_File_Capabilities_Instead_Of_Setuid
 
 #
 # coreutils
 #
 
-# Why, this (still) works for me...
 su=cap_dac_read_search,cap_setgid,cap_setuid
 
 #
@@ -26,27 +23,6 @@ su=cap_dac_read_search,cap_setgid,cap_setuid
 #
 
 crontab=cap_dac_override,cap_setgid
-
-#
-# pam
-#
-
-# Slackware -> no PAM
-#unix_chkpwd=cap_dac_read_search
-
-#
-# X11
-#
-
-# Warning: CAP_SYS_ADMIN is essentially root access.
-# There's little to no security offered by doing this.
-# See:
-# False Boundaries and Arbitrary Code Execution
-# https://forums.grsecurity.net/viewtopic.php?f=7&t=2522
-
-# However it may allow some audit trails to remain readable.
-
-Xorg=cap_dac_override,cap_chown,cap_sys_rawio,cap_sys_admin
 
 #
 # inetutils
@@ -63,53 +39,62 @@ rcp=cap_net_bind_service
 rlogin=cap_net_bind_service
 
 #
+# libexec
+#
+
+# Untested (i would just remove the setuid-bit and not add any caps)
+pt_chown=cap_chown,cap_setuid,cap_setgid
+ssh-keysign=cap_dac_read_search
+
+#
+# pam
+#
+
+unix_chkpwd=cap_dac_read_search
+
+#
 # shadow
 #
 
-# Warning: These capabilities allow gaining root access by reading the root password
-# and/or modifying files/permissions.
-# Note on redhat: chgrp shadow /etc/shadow; chmod g+r /etc/shadow
-
+chage=cap_dac_read_search
 chfn=cap_chown,cap_setuid
 chsh=cap_chown,cap_setuid
+expiry=cap_dac_override,cap_setgid
+
 gpasswd=cap_chown,cap_dac_override,cap_setuid
 newgrp=cap_dac_override,cap_setgid
 passwd=cap_chown,cap_dac_override,cap_fowner
-
-# $ ls -l /usr/bin/{chage,expiry} | cut -d' ' -f1-4,10
-# -rwx--s--x 1 root shadow /usr/bin/chage*
-# -rwx--s--x 1 root shadow /usr/bin/expiry*
-#chage=cap_dac_read_search
-# ???
-#expiry=cap_dac_override,cap_setgid
 
 #
 # util-linux-ng
 #
 
 # Warning: Do not use it, because mount and umount can not do some checks,
-# then users can mount/umount filesystems that do not have permission.
+# then users can mount/umount filesystems that do not have permission. See:
 #
-# See: "Exploit file with capabilities"
+# Exploit file with capabilities by Emeric Nasi
 # http://www.sevagas.com/IMG/pdf/exploiting_capabilities_the_dark_side.pdf
 
 #mount=cap_dac_override,cap_sys_admin
 #umount=cap_dac_override,cap_sys_admin
 
 #
-# Other programs that may benefit from capabilities,
+# X11
 #
 
-# XXX In case the alternative would be to ``setuid root'' (i suppose?).
+Xorg=cap_dac_override,cap_chown,cap_sys_rawio,cap_sys_admin
+
 #
-# https://wiki.archlinux.org/index.php/Using_File_Capabilities_Instead_Of_Setuid
+# YZ/RM/CR/KX (or other programs that may benefit from capabilities)
 #
-# Be sure to do the following first:
+
+# Be sure to do the following first (for they may well; not be setuid safe):
 # chgrp wheel `which utility`
 # chmod 710 `which utility`
 
 #beep=cap_dac_override,cap_sys_tty_config
 #chvt=cap_dac_read_search,cap_sys_tty_config
+
 #iftop=cap_net_raw
 #mii-tool=cap_net_admin
 #tcpdump=cap_net_raw

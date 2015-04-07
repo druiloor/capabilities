@@ -30,16 +30,25 @@
 #
 #
 
+#set -vx
+
+PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/libexec
 CONFIGFILE=/etc/default/pcaps4suid0
 
 if [ ! -r $CONFIGFILE ]; then
-    echo "Error: cannot read $CONFIGFILE"
-else
-  . $CONFIGFILE
+    echo "Error: cannot read $CONFIGFILE" >&2
+    exit 1
 fi
 
+for util in grep cut tr; do
+    if ! command -v $util &>/dev/null; then
+        echo "Error: command -v $util" >&2
+        exit 1
+    fi
+done
+
 APPS=$( while read line; do \
-    echo $line | grep -v -e ^# -e ^$ | cut -d= -f1 | tr '\n' " " ; done \
+    echo "$line" | grep -v -e ^# -e ^$ | cut -d= -f1,2 | tr '\n' " " ; done \
         < $CONFIGFILE )
 
 # this apps were converted/reverted
@@ -55,9 +64,6 @@ SET=pe
 
 ##FROM HERE ONLY LOGIC
 ######################
-
-#save assumption!?
-export PATH=/sbin:/bin:/usr/sbin:/usr/bin
 
 p4s_test(){
     # are we sane?
@@ -88,27 +94,37 @@ p4s_test(){
 
 p4s_app_convert(){
     # convert a single app
-    # $1 is app name; $2 is POSIX Caps
+
+    # $1 is appname=POSIXCaps
+    local appname=`echo $1 | cut -d= -f1`
+    local POSIXCaps=`echo $1 | cut -d= -f2`
+
     # well symlinks to apps, so we use -a ...
-    APP=`which -a $1 2>/dev/null`
+    APP=`which -a $appname 2>/dev/null`
     if [ "$APP" != "" ]; then
         FOUND=no
         for i in $APP; do
             # ... and are looking for symlinks
             if [ -f "$i" -a ! -L $i -a "$FOUND"=="no" ]; then
-                echo "converting $i $SET=$2"
-                chmod u-s $i
-                setcap $2=$SET $i
+                echo "converting $i $SET=$POSIXCaps"
+                if ! chmod u-s $i; then
+                    echo "Error: chmod u-s $i" >&2
+                    break
+                fi
+                if ! setcap $POSIXCaps=$SET $i; then
+                    echo "Error: setcap $POSIXCaps=$SET $i" >&2
+                    break
+                fi
                 FOUND=yes
             fi
         done
         if [ "$FOUND" == "no" ]; then
             # 'which' found only symlinks
-            echo "1 haven't found $1"
+            echo "1 haven't found $appname"
         fi
     else
         # 'which' hasn't anything given back
-        echo "haven't found $1"
+        echo "haven't found $appname"
     fi
 }
 
@@ -116,23 +132,31 @@ p4s_app_convert(){
 
 p4s_app_revert(){
     # revert a singel app
-    # $1 is app name
-    APP=`which -a $1 2>/dev/null`
+
+    # $1 is appname=POSIXCaps
+    local appname=`echo $1 | cut -d= -f1`
+
+    APP=`which -a $appname 2>/dev/null`
     if [ "$APP" != "" ]; then
         FOUND=no
         for i in $APP; do
             if [ -f "$i" -a ! -L $i -a "$FOUND"=="no" ]; then
                 echo "reverting $i" 
-                chmod u+s $i
-                setcap -r $i 2>/dev/null
+                if ! chmod u+s $i; then
+                    echo "Error: chmod u+s $i" >&2
+                fi
+                if ! setcap -r $i 2>/dev/null; then
+                    echo "Error: setcap -r $i 2>/dev/null" >&2
+                    break
+                fi 
                 FOUND=yes
             fi
         done
         if [ "$FOUND" == "no" ]; then
-            echo "1 haven't found $1"
+            echo "1 haven't found $appname"
         fi
     else
-        echo "haven't found $1"
+        echo "haven't found $appname"
     fi
 }
 
