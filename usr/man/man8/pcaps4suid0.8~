@@ -27,7 +27,7 @@ con|convert - from setuid0 to POSIX Capabilities
 .PP
 rev|revert  - from POSIX Capabilities back to setuid0
 .PP
-ls|list     - print object capabilities and setuid0 status
+ls|list     - list object capabilities and setuid0 status
 .PP
 help        - this help message
 .SH CONFIGURATION

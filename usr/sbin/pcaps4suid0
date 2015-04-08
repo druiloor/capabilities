@@ -37,13 +37,13 @@ CONFIGFILE=/etc/default/pcaps4suid0
 
 if [ ! -r $CONFIGFILE ]; then
     echo "Error: cannot read $CONFIGFILE" >&2
-    exit 1
+    exit
 fi
 
 for util in grep cut tr; do
     if ! command -v $util &>/dev/null; then
         echo "Error: command -v $util" >&2
-        exit 1
+        exit
     fi
 done
 
@@ -84,10 +84,10 @@ p4s_test(){
 
     # checking setcap for SET_SETFCAP PCap ?
     # for now we stick to root
-    if [ "$( id -u )" != "0" ]; then
-        echo "Sorry, you must be root !"
-        exit 1
-    fi
+    #if [ "$( id -u )" != "0" ]; then
+    #    echo "Sorry, you must be root !"
+    #    exit 1
+    #fi
 }
 
 
@@ -162,6 +162,36 @@ p4s_app_revert(){
 
 
 
+p4s_app_list(){
+    # list a singel app
+
+    # $1 is appname=POSIXCaps
+    local appname=`echo $1 | cut -d= -f1`
+
+    APP=`which -a $appname 2>/dev/null`
+    if [ "$APP" != "" ]; then
+        FOUND=no
+        for i in $APP; do
+            if [ -f "$i" -a ! -L $i -a "$FOUND"=="no" ]; then
+                # Pretty print
+                echo "$i = $( ls -l $i \
+                                 | cut -d' ' -f1,3-4 \
+                                     | tr '\n' " " 2>/dev/null \
+                                         && getcap -v $i \
+                                             | cut -d= -f2 2>/dev/null )"
+                FOUND=yes
+            fi
+        done
+        if [ "$FOUND" == "no" ]; then
+            echo "1 haven't found $appname"
+        fi
+    else
+        echo "haven't found $appname"
+    fi
+}
+
+
+
 p4s_convert(){
     # we go throug the APPSARRAY and call s2p_app_convert to do the job
     COUNTER=0
@@ -185,6 +215,15 @@ p4s_revert(){
 }
 
 
+p4s_list(){
+    COUNTER=0
+    let UPPER=${#APPSARRAY[*]}
+    until [ $COUNTER == $UPPER ]; do
+        p4s_app_list ${APPSARRAY[$COUNTER]}
+        let COUNTER+=1
+    done
+
+}
 
 p4s_usage(){
     echo
@@ -208,7 +247,8 @@ p4s_usage(){
     echo "Usage:  pcaps4suid0 [con(vert)|rev(ert)|help]"
     echo
     echo "         con|convert - from setuid0 to POSIX Capabilities"
-    echo "         rev|revert  - from POSIX Capabilities back to setui0"
+    echo "         rev|revert  - from POSIX Capabilities back to setuid0"
+    echo "         ls|list     - print object capabilities and setuid0 status"
     echo "         help        - this help message"
     echo
 }
@@ -224,6 +264,11 @@ case "$1" in
     rev|revert)
         p4s_test
         p4s_revert
+        exit 0
+        ;;
+    ls|list)
+        p4s_test
+        p4s_list
         exit 0
         ;;
     help)

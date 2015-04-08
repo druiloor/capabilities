@@ -5,10 +5,8 @@
 #
 
 #set -vx
-
 # vim:expandtab:tabstop=4
 
-PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/libexec
 CONFIGFILE=/etc/default/pcaps4suid0
 
 function pcaps4suid0_start()
@@ -36,32 +34,9 @@ function pcaps4suid0_restart()
 
 function pcaps4suid0_status()
 {
-	if  [ ! -r "$CONFIGFILE" ]; then
-		echo "Error: unable to read: $CONFIGFILE" >&2
-		exit 1
+	if ! /usr/sbin/pcaps4suid0 list; then
+		echo "Error: /usr/sbin/pcaps4suid0 list" >&2
 	fi
-
-	for util in grep cut tr; do
-		if ! command -v $util &>/dev/null; then
-			echo "Error: command -v $util" >&2
-			exit 1
-		fi
-	done
-
-
-	for f in $(grep -v -e ^$ -e ^# "$CONFIGFILE" | cut -d= -f1 | tr '\n' ' '); do
-
-		if ! ls -l `command -v $f`; then
-			echo "Error: ls -l `command -v $f`" >&2
-		fi
-
-		if ! getcap `command -v $f`; then
-			echo "Error: getcap `command -v $f`" >&2
-			break
-		fi
-
-		printf "\n"
-	done
 }
 
 case "$1" in
