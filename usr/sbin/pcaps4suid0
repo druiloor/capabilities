@@ -33,33 +33,14 @@
 #set -vx
 
 PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/libexec
+
 CONFIGFILE=/etc/default/pcaps4suid0
-
-if [ ! -r $CONFIGFILE ]; then
-    echo "Error: cannot read $CONFIGFILE" >&2
-    exit
-fi
-
-for util in grep cut tr; do
-    if ! command -v $util &>/dev/null; then
-        echo "Error: command -v $util" >&2
-        exit
-    fi
-done
-
-APPS=$( while read line; do \
-    echo "$line" | grep -v -e ^# -e ^$ | cut -d= -f1,2 | tr '\n' " " ; done \
-        < $CONFIGFILE )
-
-# this apps were converted/reverted
-###################################
-APPSARRAY=( $APPS )
-
 
 # we put it into this set
 #########################
 SET=pe
 #SET=ie
+
 
 
 ##FROM HERE ONLY LOGIC
@@ -71,6 +52,33 @@ p4s_test(){
     if [ $WICH == "" ]; then
         # thats bad
         echo "Sorry, I haven't found which"
+        exit
+    fi
+
+    if [ ! -r $CONFIGFILE ]; then
+        echo "Error: cannot read $CONFIGFILE" >&2
+        exit
+    fi
+
+    for util in grep cut tr; do
+        if ! command -v $util &>/dev/null; then
+            echo "Error: command -v $util" >&2
+            exit
+        fi
+    done
+
+    APPS=$( while read line; do \
+        echo "$line" | \
+            grep -v -e ^# -e ^$ \
+                | cut -d= -f1,2 \
+                    | tr '\n' " " ; done \
+        < $CONFIGFILE )
+
+    # this apps were converted/reverted
+    APPSARRAY=( $APPS )
+
+    if [ -z "$APPSARRAY" ]; then
+        echo "Sorry, no app(s) to convert/revert" >&2
         exit
     fi
 
