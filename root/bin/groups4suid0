@@ -6,7 +6,7 @@
 # Written by Menno Duursma <druiloor@zonnet.nl>
 
 # This program is free software. It comes without any warranty.
-# Granted WTFPLv2, as published by Sam Hocevar dec 2004.
+# Granted WTFPL Version 2, as published by Sam Hocevar, December 2004.
 # See http://sam.zoy.org/wtfpl/COPYING for more details.
 
 if [ -z "$1" ]; then
