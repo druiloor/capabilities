@@ -2,9 +2,6 @@
 #
 #   Search for suid binaries, and put them in thier own groups.
 #
-# * Note we enable read-access allong with execute for the group
-#   as this should allow us to do filesystem backups under an abitrary
-#   account, provided that it is a member of all groups ...
 
 if [ -z "$1" ]; then
   echo "Usage: $0 <directory>"
@@ -13,9 +10,9 @@ else
   DIR="$1"
 fi
 
-for f in `find "$DIR" -mount -type f -perm +4000 -print`; do
+for f in `find "$DIR" -mount -type f -uid 0 -perm +4000 -print`; do
   # Convert file names to lowercase and stuff it in F
-  F=`echo $f |tr '[A-Z]' '[a-z]'`
+  F=`echo $f |tr '[A-Z]' '[a-z]'| cut -d- -f1,2`
 
   # Create groups if they don't already exist
   if ! grep -q "^`basename $F`:" /etc/group; then
@@ -38,22 +35,25 @@ for f in `find "$DIR" -mount -type f -perm +4000 -print`; do
     SGIDEXEC=no
   fi
 
-  # Change group ownership to our group
-  if ! chgrp `basename $F` $f ; then
-    echo "Error: chgrp `basename $F` $f" >&2
-  fi
-
   # Set the file protection bits:
   if [ "$SUIDEXEC" == "yes" -a "$SGIDEXEC" == "yes" ]; then
+
     # Both SUID and SGID (procmail still worksForMe just SGID):
-    if ! chmod u-s,g+s,o-r $f ; then
+    if ! chmod u-s,g+s-r,o-r $f ; then
       echo "Error: chmod u-s,g+s,o-r $f" >&2
     fi
+
   elif [ "$SUIDEXEC" == "yes" ]; then
-    # SUID:
-    if ! chmod 4750 $f ; then
-      echo "Error: chmod 4750 $f" >&2
+
+    # Change group ownership to our group
+    if ! chgrp `basename $F` $f ; then
+      echo "Error: chgrp `basename $F` $f" >&2
     fi
+    # SUID:
+    if ! chmod 4710 $f ; then
+      echo "Error: chmod 4710 $f" >&2
+    fi
+
   else
     echo "Warning: this is odd: `ls -l $f`" >&2
   fi
