@@ -3,6 +3,12 @@
 #   Search for suid binaries, and put them in thier own groups.
 #
 
+# Written by Menno Duursma <druiloor@zonnet.nl>
+
+# This program is free software. It comes without any warranty.
+# Granted WTFPLv2, as published by Sam Hocevar dec 2004.
+# See http://sam.zoy.org/wtfpl/COPYING for more details.
+
 if [ -z "$1" ]; then
   echo "Usage: $0 <directory>"
   exit 1
