@@ -100,4 +100,4 @@ Xorg=cap_dac_override,cap_chown,cap_sys_rawio,cap_sys_admin
 #tcpdump=cap_net_raw
 
 # cdrecord: Insufficient 'network' privileges. You will not be able to do remote SCSI.
-#cdrecord=cap_dac_read_search,cap_dac_override,cap_sys_rawio,cap_sys_admin,cap_ipc_lock,cap_sys_nice,cap_sys_resource
+#cdrecord=cap_dac_read_search,cap_dac_override,cap_sys_rawio,cap_ipc_lock,cap_sys_nice,cap_sys_resource,cap_net_raw
