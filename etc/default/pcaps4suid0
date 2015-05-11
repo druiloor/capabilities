@@ -5,13 +5,6 @@
 # CAP_SYS_ADMIN etc are essentially root access!
 # There is little to no security offered by doing this.
 
-# See:
-# False Boundaries and Arbitrary Code Execution by Brad Spengler
-# https://forums.grsecurity.net/viewtopic.php?f=7&t=2522
-
-# Following is partly copy&pasted from here:
-# https://wiki.archlinux.org/index.php/Using_File_Capabilities_Instead_Of_Setuid
-
 #
 # coreutils
 #
@@ -42,15 +35,14 @@ rlogin=cap_net_bind_service
 # libexec
 #
 
-# Untested (i would just remove the setuid-bit and not add any caps)
-pt_chown=cap_chown,cap_setuid,cap_setgid
+#pt_chown=cap_chown,cap_setuid,cap_setgid
 ssh-keysign=cap_dac_read_search
 
 #
 # pam
 #
 
-unix_chkpwd=cap_dac_read_search
+#unix_chkpwd=cap_dac_read_search
 
 #
 # shadow
@@ -99,5 +91,7 @@ Xorg=cap_dac_override,cap_chown,cap_sys_rawio,cap_sys_admin
 #mii-tool=cap_net_admin
 #tcpdump=cap_net_raw
 
-# cdrecord: Insufficient 'network' privileges. You will not be able to do remote SCSI.
-#cdrecord=cap_dac_read_search,cap_dac_override,cap_sys_rawio,cap_ipc_lock,cap_sys_nice,cap_sys_resource,cap_net_raw
+# chgrp disk `which cdrecord`; chmod 2710 `which cdrecord`
+#
+# Insufficient 'device' privileges. You may not be able to send all needed SCSI commands, this my cause various unexplainable problems.
+cdrecord=cap_dac_override,cap_dac_read_search,cap_net_bind_service,cap_ipc_lock,cap_sys_rawio,cap_sys_nice,cap_sys_resource
