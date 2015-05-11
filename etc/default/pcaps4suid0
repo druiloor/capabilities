@@ -61,7 +61,7 @@ passwd=cap_chown,cap_dac_override,cap_fowner
 #
 
 # Warning: Do not use it, because mount and umount can not do some checks,
-# then users can mount/umount filesystems that do not have permission. See:
+# then users can mount/umount filesystems that do not have permission.
 
 #mount=cap_dac_override,cap_sys_admin
 #umount=cap_dac_override,cap_sys_admin
@@ -73,18 +73,15 @@ passwd=cap_chown,cap_dac_override,cap_fowner
 Xorg=cap_dac_override,cap_chown,cap_sys_rawio,cap_sys_admin
 
 #
-# YZ/RM/CR/KX (or other programs that may benefit from capabilities)
+# YZ (CR/KX/RM or other programs that may benefit from capabilities)
 #
 
 # Be sure to do the following first (for they may well; not be setuid safe):
 # chgrp wheel `which utility`
 # chmod 710 `which utility`
-
+#
 #beep=cap_dac_override,cap_sys_tty_config
 #chvt=cap_dac_read_search,cap_sys_tty_config
 #iftop=cap_net_raw
 #mii-tool=cap_net_admin
 #tcpdump=cap_net_raw
-
-# chgrp disk `which cdrecord`; chmod 2710 `which cdrecord`; gpasswd -a menno disk
-#cdrecord=cap_dac_override,cap_dac_read_search,cap_net_bind_service,cap_ipc_lock,cap_sys_rawio,cap_sys_nice,cap_sys_resource
