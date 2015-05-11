@@ -35,14 +35,13 @@ rlogin=cap_net_bind_service
 # libexec
 #
 
-#pt_chown=cap_chown,cap_setuid,cap_setgid
 ssh-keysign=cap_dac_read_search
 
 #
 # pam
 #
 
-#unix_chkpwd=cap_dac_read_search
+unix_chkpwd=cap_dac_read_search
 
 #
 # shadow
@@ -63,9 +62,6 @@ passwd=cap_chown,cap_dac_override,cap_fowner
 
 # Warning: Do not use it, because mount and umount can not do some checks,
 # then users can mount/umount filesystems that do not have permission. See:
-#
-# Exploit file with capabilities by Emeric Nasi
-# http://www.sevagas.com/IMG/pdf/exploiting_capabilities_the_dark_side.pdf
 
 #mount=cap_dac_override,cap_sys_admin
 #umount=cap_dac_override,cap_sys_admin
@@ -86,12 +82,9 @@ Xorg=cap_dac_override,cap_chown,cap_sys_rawio,cap_sys_admin
 
 #beep=cap_dac_override,cap_sys_tty_config
 #chvt=cap_dac_read_search,cap_sys_tty_config
-
 #iftop=cap_net_raw
 #mii-tool=cap_net_admin
 #tcpdump=cap_net_raw
 
-# chgrp disk `which cdrecord`; chmod 2710 `which cdrecord`
-#
-# Insufficient 'device' privileges. You may not be able to send all needed SCSI commands, this my cause various unexplainable problems.
-cdrecord=cap_dac_override,cap_dac_read_search,cap_net_bind_service,cap_ipc_lock,cap_sys_rawio,cap_sys_nice,cap_sys_resource
+# chgrp disk `which cdrecord`; chmod 2710 `which cdrecord`; gpasswd -a menno disk
+#cdrecord=cap_dac_override,cap_dac_read_search,cap_net_bind_service,cap_ipc_lock,cap_sys_rawio,cap_sys_nice,cap_sys_resource
