@@ -4,14 +4,14 @@ CONFIGFILE=/etc/default/capabilities
 
 capabilities_start() {
   if [ -r "$CONFIGFILE" -a -x /usr/sbin/capabilities ]; then
-    if ! /usr/sbin/capabilities convert; then
+    if ! /usr/sbin/capabilities con; then
       echo "Error: /usr/sbin/capabilities convert" >&2
     fi
   fi
 }
 
 capabilities_stop() {
-  if ! /usr/sbin/capabilities revert; then
+  if ! /usr/sbin/capabilities rev; then
     echo "Error: /usr/sbin/capabilities revert" >&2
   fi
 }
@@ -23,7 +23,7 @@ capabilities_restart() {
 }
 
 capabilities_status() {
-  if ! /usr/sbin/capabilities list; then
+  if ! /usr/sbin/capabilities ls; then
     echo "Error: /usr/sbin/capabilities list" >&2
   fi
 }
