@@ -1,6 +1,6 @@
 This is basically a simple form of shadow/unshadow kind of thingy for Linux CAPABILITIES(7)
 
-#make install
+root@darkstar:~/capabilities# make install
 
 And add to /etc/rc.d/rc.local
 
