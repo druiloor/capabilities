@@ -34,7 +34,7 @@
 
 PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/libexec
 
-CONFIGFILE=/etc/default/pcaps4suid0
+CONFIGFILE=/etc/default/capabilities
 
 # we put it into this set
 #########################
@@ -234,25 +234,7 @@ p4s_list(){
 }
 
 p4s_usage(){
-    echo
-    echo "pcaps4suid0"
-    echo
-    echo "pcaps4suid0 changes the file system entry of binaries from using setuid-0"
-    echo "to using POSIX Capabilities by granting the necessary Privileges"
-    echo "This is done by storing the needed POSIX Capabilities into the extended"
-    echo "attribute capability through setcap."
-    echo "Following the idea of setuid - granting a binary the privilege regardless"
-    echo "of the user, the POSIX Capabilities are stored into the Permitted and"
-    echo "Effective set."
-    echo "If you are using pam_cap.so, you might want to change the set into the"
-    echo "Inherited and Effective set (check for the SET var)."
-    echo
-    echo "You need and I will check fot the utilities which, chmod and setcap."
-    echo
-    echo "Your Filesystem has to support extended attributes and your kernel must have"
-    echo "support for POSIX File Capabilities (CONFIG_SECURITY_FILE_CAPABILITIES)."
-    echo
-    echo "Usage:  pcaps4suid0 [con(vert)|rev(ert)|help]"
+    echo "Usage: capabilities [con(vert)|rev(ert)|list|help]"
     echo
     echo "         con|convert - from setuid0 to POSIX Capabilities"
     echo "         rev|revert  - from POSIX Capabilities back to setuid0"
@@ -284,7 +266,7 @@ case "$1" in
         exit 0
         ;;
     *)
-        echo "Try 'pcaps4suid0 help' for more information"
+        echo "Try 'capabilities help' for more information"
         exit 1
         ;;
 esac

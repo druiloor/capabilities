@@ -1,5 +1,5 @@
 #
-# See pcaps4suid0(8) and /usr/include/linux/capability.h
+# See capabilities(8) and /usr/include/linux/capability.h
 #
 
 # CAP_SYS_ADMIN etc are essentially root access!

@@ -1,0 +1,53 @@
+#!/bin/sh
+
+CONFIGFILE=/etc/default/capabilities
+
+capabilities_start() {
+  if [ -r "$CONFIGFILE" -a -x /usr/sbin/capabilities ]; then
+    if ! /usr/sbin/capabilities convert; then
+      echo "Error: /usr/sbin/capabilities convert" >&2
+    fi
+  fi
+}
+
+capabilities_stop() {
+  if ! /usr/sbin/capabilities revert; then
+    echo "Error: /usr/sbin/capabilities revert" >&2
+  fi
+}
+
+capabilities_restart() {
+  capabilities_stop
+    sleep 1
+  capabilities_start
+}
+
+capabilities_status() {
+  if ! /usr/sbin/capabilities list; then
+    echo "Error: /usr/sbin/capabilities status" >&2
+  fi
+}
+
+case "$1" in
+	'start')
+		capabilities_start
+	;;
+
+	'stop')
+		capabilities_stop
+	;;
+
+	'restart')
+		capabilities_restart
+	;;
+
+	'status')
+		capabilities_status
+	;;
+
+	*)
+		echo $"Usage: $0 {start|stop|restart|status}"
+		exit 3
+	;;
+esac
+
