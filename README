@@ -1,9 +1,12 @@
 This is basically a simple form of shadow/unshadow kind of thingy for Linux CAPABILITIES(7)
-Add to /etc/rc.d/rc.local
 
-if [ -x /etc/rc.d/rc.pcaps4suid0 ]; then
-  if ! /etc/rc.d/rc.pcaps4suid0 start ; then
-    echo "Error: /etc/rc.d/rc.pcaps4suid0 start" >&2
+#make install
+
+And add to /etc/rc.d/rc.local
+
+if [ -x /etc/rc.d/rc.capabilities ]; then
+  if ! /etc/rc.d/rc.capabilities start ; then
+    echo "Error: /etc/rc.d/rc.capabilities start" >&2
   fi
 fi
 
