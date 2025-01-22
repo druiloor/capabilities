@@ -70,7 +70,7 @@ passwd=cap_chown,cap_dac_override,cap_fowner
 # X11
 #
 
-Xorg=cap_dac_override,cap_chown,cap_sys_rawio,cap_sys_admin
+#Xorg=cap_dac_override,cap_chown,cap_sys_rawio,cap_sys_admin
 
 #
 # YZ (CR/KX/RM or other programs that may benefit from capabilities)
